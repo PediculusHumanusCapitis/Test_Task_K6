@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class KafkaListenerService {
@@ -45,15 +46,22 @@ public class KafkaListenerService {
                 ((ObjectNode) jsonNode).put("userId", updatedUserId);
 
                 String updatedMessage = objectMapper.writeValueAsString(jsonNode);
-                kafkaTemplate.send("output-topic", updatedMessage);
+                kafkaTemplate.send("output-topic", updatedMessage).get();
 
                 messageCounter.increment();
             } else {
                 System.out.println("Поле userId не найдено в сообщении");
+                errorCounter.increment();
             }
         } catch (IOException e) {
             System.err.println("Ошибка при обработке JSON-сообщения: " + e.getMessage());
-
+            errorCounter.increment();
+        } catch (InterruptedException e) {
+            System.err.println("Операция отправки была прервана: " + e.getMessage());
+            Thread.currentThread().interrupt();
+            errorCounter.increment();
+        } catch (ExecutionException e) {
+            System.err.println("Ошибка при выполнении отправки сообщения: " + e.getCause());
             errorCounter.increment();
         } finally {
 

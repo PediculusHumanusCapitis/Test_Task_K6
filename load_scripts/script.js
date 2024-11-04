@@ -11,9 +11,14 @@ export let options = {
 };
 
 export default function () {
-  const payload = JSON.stringify({ userId: Math.floor(Math.random() * 10000) });
-  const params = { headers: { 'Content-Type': 'application/json' } };
-  const res = http.post('http://localhost:8081/kafka/send', payload, params);
+  const payload = JSON.stringify({
+      records: [
+          { value: { userId: Math.floor(Math.random() * 10000) } }
+      ]
+  });
+
+  const params = { headers: { 'Content-Type': 'application/vnd.kafka.json.v2+json' } };
+  const res = http.post('http://localhost:8082/topics/input-topic', payload, params);
   check(res, { 'status is 200': (r) => r.status === 200 });
-  sleep(1);
+  sleep(0.995);
 }

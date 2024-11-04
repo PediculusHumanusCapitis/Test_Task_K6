@@ -19,12 +19,24 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 1,
-  "links": [],
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": false,
+      "title": "New link",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
   "panels": [
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "ee2wroaao7dhcc"
+        "uid": "ee2x67l7ym800e"
       },
       "fieldConfig": {
         "defaults": {
@@ -32,52 +44,15 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
             }
           },
+          "fieldMinMax": false,
           "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
+          "unit": "none"
         },
         "overrides": []
       },
@@ -89,11 +64,22 @@
       },
       "id": 7,
       "options": {
+        "displayLabels": [
+          "name",
+          "value"
+        ],
         "legend": {
-          "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
         },
         "tooltip": {
           "mode": "single",
@@ -105,22 +91,44 @@
         {
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "sum by(instance) (kafka_listener_errors_total)",
+          "exemplar": false,
+          "expr": "kafka_listener_errors_total",
+          "format": "time_series",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
-          "legendFormat": "__auto",
+          "instant": false,
+          "legendFormat": "Errors",
           "range": true,
           "refId": "A",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ee2x67l7ym800e"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "exemplar": false,
+          "expr": "kafka_listener_messages_total",
+          "format": "time_series",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "Completed requests",
+          "range": true,
+          "refId": "B",
           "useBackend": false
         }
       ],
       "title": "Total Errors",
-      "type": "timeseries"
+      "type": "piechart"
     },
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "ee2wroaao7dhcc"
+        "uid": "ee2x67l7ym800e"
       },
       "fieldConfig": {
         "defaults": {
@@ -217,7 +225,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "ee2wroaao7dhcc"
+        "uid": "ee2x67l7ym800e"
       },
       "fieldConfig": {
         "defaults": {
@@ -270,7 +278,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "s"
         },
         "overrides": []
       },
@@ -298,9 +307,9 @@
         {
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "rate(kafka_listener_processing_duration_seconds_sum[1m])/rate(kafka_listener_processing_duration_seconds_count[1m])",
+          "expr": "rate(kafka_listener_processing_duration_seconds_sum[1m])/rate(kafka_listener_messages_total[1m])",
           "fullMetaSearch": false,
-          "includeNullMetadata": true,
+          "includeNullMetadata": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A",
@@ -313,7 +322,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "ee2wroaao7dhcc"
+        "uid": "ee2x67l7ym800e"
       },
       "fieldConfig": {
         "defaults": {
@@ -394,8 +403,8 @@
       "targets": [
         {
           "disableTextWrap": false,
-          "editorMode": "code",
-          "expr": "sum by(area) (jvm_memory_max_bytes) ",
+          "editorMode": "builder",
+          "expr": "sum by(area) (jvm_memory_used_bytes{area=\"heap\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -404,13 +413,13 @@
           "useBackend": false
         }
       ],
-      "title": "memory_max",
+      "title": "Memory Used",
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "ee2wroaao7dhcc"
+        "uid": "ee2x67l7ym800e"
       },
       "fieldConfig": {
         "defaults": {
@@ -494,115 +503,13 @@
           "expr": "rate(kafka_listener_messages_total[1m])",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
-          "legendFormat": "__auto",
+          "legendFormat": "RPS",
           "range": true,
           "refId": "A",
           "useBackend": false
         }
       ],
       "title": "RPS",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "ee2wroaao7dhcc"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "fieldMinMax": false,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "decbytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 24
-      },
-      "id": 1,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.3.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "ee2wroaao7dhcc"
-          },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "sum by(area) (jvm_memory_used_bytes)",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "memory_used",
       "type": "timeseries"
     }
   ],
@@ -614,13 +521,13 @@
     "list": []
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "K6",
   "uid": "be2uuon24n400b",
-  "version": 12,
+  "version": 5,
   "weekStart": ""
 }
